@@ -32,4 +32,21 @@ coverage
 *.sln
 *.sw?
 *.env
+# Dependency directories
+node_modules/
+jspm_packages/
+# Build output
+dist/
+build/
+out/
+# Miscellaneous
+*.tgz
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bak
+*.tmp
+*.swp
+*.swo       
 

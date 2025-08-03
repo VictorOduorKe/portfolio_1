@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/Contact.css';
+const API_BASE = import.meta.env.REACT_APP_API_URL || ''; 
 
 const Contact = () => {
   const timeout = 3000;
@@ -54,7 +55,8 @@ const Contact = () => {
     }
 
     try {
-      const resp = await fetch('http://localhost:4000/api/contact', {
+
+      const resp = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, phone, email, message }),
