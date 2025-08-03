@@ -76,7 +76,8 @@
         min-width: 150px;
     }
     .hero .left p{
-        font-size: 20px;    
+        font-size: 16px; 
+        padding:10px;   
     }
     
 }
