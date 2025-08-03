@@ -1,6 +1,5 @@
-
-
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -9,10 +8,46 @@ const { Twilio } = require('twilio');
 
 const app = express();
 
-// Security headers
+// Required environment variables
+const requiredEnv = [
+  'TWILIO_ACCOUNT_SID',
+  'TWILIO_AUTH_TOKEN',
+  'TWILIO_WHATSAPP_FROM',
+  'TWILIO_WHATSAPP_TO'
+];
+
+const missingEnv = requiredEnv.filter((k) => !process.env[k]);
+if (missingEnv.length) {
+  console.warn('Missing required env vars:', missingEnv.join(', '));
+  // Optionally fail fast in production:
+  // process.exit(1);
+}
+
+// Validate WhatsApp number prefixes early
+const whatsappFrom = process.env.TWILIO_WHATSAPP_FROM || '';
+const whatsappTo = process.env.TWILIO_WHATSAPP_TO || '';
+if ((whatsappFrom && !whatsappFrom.startsWith('whatsapp:')) ||
+    (whatsappTo && !whatsappTo.startsWith('whatsapp:'))) {
+  console.warn(
+    'Twilio WhatsApp numbers should start with "whatsapp:".',
+    { whatsappFrom, whatsappTo }
+  );
+  // You could also exit here if format is critical.
+}
+
+// Instantiate Twilio client only if credentials exist (or guard usage later)
+let client = null;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  client = new Twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+}
+
+// Middleware: security headers
 app.use(helmet());
 
-// Rate limit
+// Rate limiting
 app.use(
   rateLimit({
     windowMs: 60 * 1000, // 1 minute
@@ -22,46 +57,37 @@ app.use(
   })
 );
 
-// Parse JSON body
+// Body parsing
 app.use(express.json());
 
-// CORS setup (allow React dev servers)
+// CORS setup
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,
-  'http://localhost:3000', // CRA default
-  'http://localhost:5173', // Vite default
-].filter(Boolean);
+  process.env.CLIENT_ORIGIN, // e.g., your production frontend
+  'http://localhost:3000',
+  'http://localhost:5173',
+]
+  .filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       console.log('CORS incoming origin:', origin);
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
+        // No Origin header (non-browser) — allow if that's intended
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS policy: origin ${origin} not allowed`), false);
     },
-    credentials: true, // allow cookies/auth headers
+    credentials: true,
     methods: ['POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   })
 );
 
-// Twilio client
-const client = new Twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
-// Check env vars
-const allowed_credentials= ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM', 'TWILIO_WHATSAPP_TO']
-  allowed_credentials.forEach((key) => {
-    if (!process.env[key]) {
-      console.warn(`Warning: Environment variable ${key} is not set.`);
-    }
-  });
-
-// Contact form route
+// Contact form endpoint
 app.post('/api/contact', async (req, res) => {
   const { username, phone, email, message } = req.body;
 
@@ -81,6 +107,18 @@ app.post('/api/contact', async (req, res) => {
     return res.status(400).json({ error: 'Message must be at least 10 characters long.' });
   }
 
+  if (!client) {
+    return res.status(500).json({ error: 'Twilio client not configured.' });
+  }
+
+  if (!whatsappFrom || !whatsappTo) {
+    return res.status(500).json({ error: 'Twilio WhatsApp numbers not configured.' });
+  }
+
+  if (!whatsappFrom.startsWith('whatsapp:') || !whatsappTo.startsWith('whatsapp:')) {
+    return res.status(500).json({ error: 'Twilio numbers must start with "whatsapp:".' });
+  }
+
   const outgoing = `
 New contact form submission:
 Name: ${username}
@@ -90,17 +128,11 @@ Message: ${message}
   `.trim();
 
   try {
-    const from = process.env.TWILIO_WHATSAPP_FROM;
-    const to = process.env.TWILIO_WHATSAPP_TO;
-
-    if (!from || !to) {
-      return res.status(500).json({ error: 'Twilio WhatsApp numbers not configured.' });
-    }
-    if (!from.startsWith('whatsapp:') || !to.startsWith('whatsapp:')) {
-      return res.status(500).json({ error: 'Twilio numbers must start with "whatsapp:".' });
-    }
-
-    await client.messages.create({ from, to, body: outgoing });
+    await client.messages.create({
+      from: whatsappFrom,
+      to: whatsappTo,
+      body: outgoing,
+    });
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error('Twilio error:', err);
