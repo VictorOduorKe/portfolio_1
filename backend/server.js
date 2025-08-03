@@ -1,10 +1,3 @@
-process.on('uncaughtException', err => {
-  console.error('Uncaught Exception:', err);
-});
-
-process.on('unhandledRejection', reason => {
-  console.error('Unhandled Rejection:', reason);
-});
 
 
 require('dotenv').config();
@@ -61,8 +54,8 @@ const client = new Twilio(
 );
 
 // Check env vars
-['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM', 'TWILIO_WHATSAPP_TO']
-  .forEach((key) => {
+const allowed_credentials= ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM', 'TWILIO_WHATSAPP_TO']
+  allowed_credentials.forEach((key) => {
     if (!process.env[key]) {
       console.warn(`Warning: Environment variable ${key} is not set.`);
     }
