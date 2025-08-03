@@ -8,7 +8,7 @@ const { Twilio } = require('twilio');
 
 const app = express();
 
-// Required environment variables
+// === Configuration ===
 const requiredEnv = [
   'TWILIO_ACCOUNT_SID',
   'TWILIO_AUTH_TOKEN',
@@ -16,38 +16,38 @@ const requiredEnv = [
   'TWILIO_WHATSAPP_TO'
 ];
 
-const missingEnv = requiredEnv.filter((k) => !process.env[k]);
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 if (missingEnv.length) {
-  console.warn('Missing required env vars:', missingEnv.join(', '));
-  // Optionally fail fast in production:
-  // process.exit(1);
+  console.warn('Missing required environment variables:', missingEnv.join(', '));
+  if (process.env.FAIL_ON_MISSING_CONFIG === '1') {
+    console.error('Exiting due to missing critical config.');
+    process.exit(1);
+  }
 }
 
-// Validate WhatsApp number prefixes early
+// Normalize and validate WhatsApp numbers early
 const whatsappFrom = process.env.TWILIO_WHATSAPP_FROM || '';
 const whatsappTo = process.env.TWILIO_WHATSAPP_TO || '';
-if ((whatsappFrom && !whatsappFrom.startsWith('whatsapp:')) ||
-    (whatsappTo && !whatsappTo.startsWith('whatsapp:'))) {
-  console.warn(
-    'Twilio WhatsApp numbers should start with "whatsapp:".',
-    { whatsappFrom, whatsappTo }
-  );
-  // You could also exit here if format is critical.
+
+if (whatsappFrom && !whatsappFrom.startsWith('whatsapp:')) {
+  console.warn(`TWILIO_WHATSAPP_FROM should start with "whatsapp:". Got "${whatsappFrom}"`);
+}
+if (whatsappTo && !whatsappTo.startsWith('whatsapp:')) {
+  console.warn(`TWILIO_WHATSAPP_TO should start with "whatsapp:". Got "${whatsappTo}"`);
 }
 
-// Instantiate Twilio client only if credentials exist (or guard usage later)
-let client = null;
+// Twilio client setup (guarded)
+let twilioClient = null;
 if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-  client = new Twilio(
+  twilioClient = new Twilio(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
   );
 }
 
-// Middleware: security headers
+// === Middleware ===
 app.use(helmet());
 
-// Rate limiting
 app.use(
   rateLimit({
     windowMs: 60 * 1000, // 1 minute
@@ -57,23 +57,22 @@ app.use(
   })
 );
 
-// Body parsing
 app.use(express.json());
 
-// CORS setup
+// CORS: allowed origins come from CLIENT_ORIGINS (comma-separated) plus local dev fallbacks
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN, // e.g., your production frontend
+  ...(process.env.CLIENT_ORIGIN || '').split(',').map((o) => o.trim()).filter(Boolean),
   'http://localhost:3000',
   'http://localhost:5173',
-]
-  .filter(Boolean);
-
+];
+console.log(allowedOrigins)
+// Custom origin checker to optionally allow non-browser requests
 app.use(
   cors({
     origin: (origin, callback) => {
       console.log('CORS incoming origin:', origin);
       if (!origin) {
-        // No Origin header (non-browser) — allow if that's intended
+        // Allow no-Origin (e.g., curl or non-browser). Change to reject if unwanted.
         return callback(null, true);
       }
       if (allowedOrigins.includes(origin)) {
@@ -87,7 +86,7 @@ app.use(
   })
 );
 
-// Contact form endpoint
+// === Routes ===
 app.post('/api/contact', async (req, res) => {
   const { username, phone, email, message } = req.body;
 
@@ -107,7 +106,7 @@ app.post('/api/contact', async (req, res) => {
     return res.status(400).json({ error: 'Message must be at least 10 characters long.' });
   }
 
-  if (!client) {
+  if (!twilioClient) {
     return res.status(500).json({ error: 'Twilio client not configured.' });
   }
 
@@ -116,7 +115,7 @@ app.post('/api/contact', async (req, res) => {
   }
 
   if (!whatsappFrom.startsWith('whatsapp:') || !whatsappTo.startsWith('whatsapp:')) {
-    return res.status(500).json({ error: 'Twilio numbers must start with "whatsapp:".' });
+    return res.status(500).json({ error: 'Twilio WhatsApp numbers must start with "whatsapp:".' });
   }
 
   const outgoing = `
@@ -128,7 +127,7 @@ Message: ${message}
   `.trim();
 
   try {
-    await client.messages.create({
+    await twilioClient.messages.create({
       from: whatsappFrom,
       to: whatsappTo,
       body: outgoing,
@@ -140,13 +139,18 @@ Message: ${message}
   }
 });
 
-// Global error handler
+// === Global error handler ===
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  if (res.headersSent) return next(err);
+  if (res.headersSent) {
+    return next(err);
+  }
   res.status(500).json({ error: 'Internal server error.' });
 });
 
+// === Startup ===
 const port = process.env.PORT || 4000;
 console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
