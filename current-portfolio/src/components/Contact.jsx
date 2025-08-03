@@ -49,7 +49,7 @@ const Contact = () => {
       const resp = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // matches backend CORS config
+        credentials: 'include', // matches backend CORS configs
         body: JSON.stringify({ username, phone, email, message }),
       });
 
