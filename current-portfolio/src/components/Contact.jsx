@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../css/Contact.css';
 
-const API_BASE = import.meta.env.VITE_API_URL||'http://localhost:4000';
+const rawApiBase = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
+const API_BASE = rawApiBase.replace(/\/+$/, ''); // strip trailing slash if any
 
 const Contact = () => {
   const timeout = 3000;
@@ -9,6 +10,7 @@ const Contact = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const clearTimer = useRef(null);
+  const formRef = useRef(null);
 
   const clearMessages = () => {
     if (clearTimer.current) clearTimeout(clearTimer.current);
@@ -32,8 +34,17 @@ const Contact = () => {
     setSuccess('');
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.trim()]));
+    const formEl = formRef.current;
+    if (!formEl) {
+      setErrors('Form reference lost.');
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData(formEl);
+    const data = Object.fromEntries(
+      [...formData.entries()].map(([k, v]) => [k, v.trim()])
+    );
     const { username, phone, email, message } = data;
 
     if (!username || !phone || !email || !message) {
@@ -49,18 +60,23 @@ const Contact = () => {
       const resp = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // matches backend CORS configs
+        credentials: 'include',
         body: JSON.stringify({ username, phone, email, message }),
       });
 
-      const text = await resp.text();
-      const result = text ? JSON.parse(text) : {};
+      let result = {};
+      try {
+        const text = await resp.text();
+        result = text ? JSON.parse(text) : {};
+      } catch (_) {
+        // ignore JSON parse errors; we'll handle via status
+      }
 
       if (resp.ok) {
         setSuccess('Thank you for contacting us! Contact sent via WhatsApp.');
-        e.currentTarget.reset();
+        formEl.reset();
       } else {
-        setErrors(result.error || 'Submission failed.');
+        setErrors(result.error || `Submission failed (${resp.status}).`);
       }
     } catch (err) {
       console.error('Network error:', err);
@@ -75,22 +91,54 @@ const Contact = () => {
     <section className="contact-container" id="contact">
       <h1>CONTACT US HERE</h1>
       <div className="contact-form">
-        <form id="contact-form" onSubmit={handleSubmit} noValidate>
+        <form
+          id="contact-form"
+          onSubmit={handleSubmit}
+          noValidate
+          ref={formRef}
+        >
           <div className="input-field">
             <label htmlFor="username">Full name</label>
-            <input type="text" name="username" id="username" placeholder="Enter full name" required disabled={loading} />
+            <input
+              type="text"
+              name="username"
+              id="username"
+              placeholder="Enter full name"
+              required
+              disabled={loading}
+            />
           </div>
           <div className="input-field">
             <label htmlFor="phone">Phone No</label>
-            <input type="tel" name="phone" id="phone" placeholder="Enter valid phone number" required disabled={loading} />
+            <input
+              type="tel"
+              name="phone"
+              id="phone"
+              placeholder="Enter valid phone number"
+              required
+              disabled={loading}
+            />
           </div>
           <div className="input-field">
             <label htmlFor="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="Enter email" required disabled={loading} />
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Enter email"
+              required
+              disabled={loading}
+            />
           </div>
           <div className="input-field">
             <label htmlFor="message">Message</label>
-            <textarea name="message" id="message" placeholder="Type message" required disabled={loading}></textarea>
+            <textarea
+              name="message"
+              id="message"
+              placeholder="Type message"
+              required
+              disabled={loading}
+            ></textarea>
           </div>
           <button type="submit" disabled={loading}>
             {loading ? 'Sending...' : 'Send'}

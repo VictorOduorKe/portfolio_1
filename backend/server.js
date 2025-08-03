@@ -61,7 +61,7 @@ app.use(express.json());
 
 // CORS: allowed origins come from CLIENT_ORIGINS (comma-separated) plus local dev fallbacks
 const allowedOrigins = [
-  ...(process.env.CLIENT_ORIGIN || '').split(',').map((o) => o.trim()).filter(Boolean),
+  process.env.CLIENT_ORIGIN,
   'http://localhost:3000',
   'http://localhost:5173',
 ];
