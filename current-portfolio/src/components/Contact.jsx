@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../css/Contact.css';
 
-const rawApiBase = import.meta.env.VITE_API_BASE;
-const API_BASE = rawApiBase.replace(/\/+$/, ''); // strip trailing slash if any
-
+//const rawApiBase = process.env.VITE_API_BASE||"http://localhost:4000";
+ const API_BASE = import.meta.env.VITE_API_BASE;
+ const isBeta = import.meta.env.VITE_ENABLE_BETA === 'true';
+console.log("THIS IS API: ",API_BASE)
 const Contact = () => {
-  const timeout = 3000;
+  const timeout = 6000;
   const [errors, setErrors] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
