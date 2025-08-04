@@ -55,8 +55,12 @@
    form button[type=submit]{
         width: 100%;
         font-size: 15px;
-        padding: 2px;
+        padding: 10px;
         margin-top: 10px;
+    }
+    form button[type=submit]:hover{
+        background: green;
+        color:white;
     }
     .contact-container h1{
         font-size: 16px;
@@ -85,7 +89,24 @@ button[type=submit]:hover{
 .error{
     color:red;
     font-size: 16px;
+    animation: animateMessage 0.3s infinite forwards ;
 }
-.seccess{
+.success{
+    animation: animateMessage 0.3s infinite forwards ;
     color:green;
+}
+
+@keyframes animateMessage {
+    0%,50%{
+      transform: translate(-10px);
+      background: white;
+      padding:10px;
+      border-radius: 10px;
+    }
+    100%,0%{
+        transform: translate(10px);
+        background:white;
+        padding:10px;
+      border-radius: 10px;
+    }
 }
