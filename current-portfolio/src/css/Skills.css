@@ -64,3 +64,9 @@
     font-size: 16px;
 }
 }
+@media (max-width:423px) {
+    .skill-item img{
+        padding: 0;
+        width: 100%;
+    }
+}

@@ -29,8 +29,8 @@ export const networking_skills = [
     { skill_name: "Packet Tracer", skill_image: packet_tracer },
     { skill_name: "Huawei", skill_image: huawei },
     { skill_name: "Windows Server", skill_image: windows_server },
-    { skill_name: "Burp Suite", skill_image: burp },
-    { skill_name: "OWASP ZAP", skill_image: OWASP },
+    { skill_name: "PennTesting (Burp Suite)", skill_image: burp },
+    { skill_name: "PenTesting (OWASP ZAP)", skill_image: OWASP },
 ];
 
 export const projects=[
