@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../css/Contact.css';
 
-const rawApiBase = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
+const rawApiBase = import.meta.env.VITE_API_BASE;
 const API_BASE = rawApiBase.replace(/\/+$/, ''); // strip trailing slash if any
 
 const Contact = () => {
