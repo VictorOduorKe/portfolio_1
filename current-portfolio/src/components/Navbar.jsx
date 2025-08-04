@@ -16,6 +16,11 @@ const Navbar = () => {
           <ul>
            
             <li>
+              <Link to="languages" smooth={true} duration={600}>
+                languages
+              </Link>
+            </li>
+            <li>
               <Link to="skills" smooth={true} duration={600}>
                 skill
               </Link>

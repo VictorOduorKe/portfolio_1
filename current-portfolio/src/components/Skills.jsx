@@ -4,7 +4,7 @@ const Skills = () => {
   //const [animate,setAnimate]=useEffect(false)
   return (
     <>
-      <section className="skills-container" id="skills" >
+      <section className="skills-container" id="languages" >
         <h1>Programming Languages</h1>
         <div className="skills">
           {dev_skills.map((Skill, index) => (
@@ -17,7 +17,7 @@ const Skills = () => {
         </div>
       </section>
 
-      <section className="skills-container">
+      <section className="skills-container" id="skills">
         <h1>Networking Skills Attained</h1>
         <div className="skills">
           {networking_skills.map((skill_item, index) => (
