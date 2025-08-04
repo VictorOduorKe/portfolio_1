@@ -5,16 +5,17 @@ const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);;
 
-  const togggleMenu=()=>{
+  const togggleMenu = () => {
     setMenuOpen(!menuOpen);
   }
   return (
     <>
       <header className="navbar">
-        <a href="">Victor Oduor</a>
-        <nav className={menuOpen?"menu-active":""}>
+        <a href="" className="home">Victor Oduor</a>
+        <nav className={menuOpen ? "menu-active" : ""}>
           <ul>
-           
+
+            <li><Link to={my_cv} download={"my_cv.pdf"}>Download Cv</Link></li>
             <li>
               <Link to="languages" smooth={true} duration={600}>
                 languages
@@ -35,12 +36,11 @@ const Navbar = () => {
                 Contact
               </Link>
             </li>
-            <li><a href={my_cv} download={"my-cv.pdf"}>Download CV</a></li>
           </ul>
         </nav>
-          <div className="togle-menu" onClick={togggleMenu}>
-            <i className={menuOpen?"fa fa-times":"fa fa-bars"}></i>
-          </div>
+        <div className="togle-menu" onClick={togggleMenu}>
+          <i className={menuOpen ? "fa fa-times" : "fa fa-bars"}></i>
+        </div>
       </header>
     </>
   );
