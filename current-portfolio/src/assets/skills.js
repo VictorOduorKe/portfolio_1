@@ -11,6 +11,10 @@ import valentine from "../assets/valentine.png";
 import form from "../assets/form.png";
 import number_game from "../assets/number-game.png";
 import python from "../assets/python.png";
+import scholaship from '../assets/scholarship.png';
+import music_app from '../assets/music-app.png'
+import shoe_base from "../assets/shoe-base.png"
+import inventory from "../assets/inventory.png"
 
 
 export const dev_skills = [
@@ -33,5 +37,8 @@ export const projects=[
     {project_name:"Number game",project_image:number_game,project_link:"https://victoroduorke.github.io/numberGame/", status:false},
     {project_name:"React Register Form",project_image:form, project_link:"https://victoroduorke.github.io/login-page/", status:false},
     {project_name:"Valentine",project_image:valentine, project_link:"https://victoroduorke.github.io/valentine", status:false},
-    {project_name:"Docement Scanner",project_image:"", project_link:"", status:true}
+    {project_name:"ScholarShip Website",project_image:scholaship, project_link:"https://scollarship.netlify.app/", status:false},
+    {project_name:"Music App",project_image:music_app, project_link:"https://musicplayerv-1.netlify.app/", status:false},
+    {project_name:"E-commerce (shoe-base)",project_image:shoe_base, project_link:"https://shoe-base.netlify.app/", status:false},
+    {project_name:"Offline ICT inventory",project_image:inventory, project_link:"", status:true}
 ]

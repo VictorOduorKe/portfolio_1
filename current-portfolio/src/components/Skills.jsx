@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { dev_skills, networking_skills } from "../assets/skills";
 const Skills = () => {
+  //const [animate,setAnimate]=useEffect(false)
   return (
     <>
-      <section className="skills-container" id="skills">
-        <h1>Dev Skills Attained</h1>
+      <section className="skills-container" id="skills" >
+        <h1>Programming Languages</h1>
         <div className="skills">
           {dev_skills.map((Skill, index) => (
             <div key={index} className="skill-item">

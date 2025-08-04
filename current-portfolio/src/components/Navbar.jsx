@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-scroll";
+import my_cv from "../assets/my-cv.pdf"
 const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);;
@@ -29,6 +30,7 @@ const Navbar = () => {
                 Contact
               </Link>
             </li>
+            <li><a href={my_cv} download={"my-cv.pdf"}>Download CV</a></li>
           </ul>
         </nav>
           <div className="togle-menu" onClick={togggleMenu}>
