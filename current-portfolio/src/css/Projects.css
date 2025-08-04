@@ -1,78 +1,137 @@
-.projects-container{
-    display:flex;
-    flex-direction: column;
-    width: 80%;
-    margin: 20px auto;
+/* container/title */
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin: 20px auto;
 }
-.projects-container h1{
-    text-align: center;
-    margin: 30px;
-    font-size: 60px;
+.projects-container h1 {
+  text-align: center;
+  margin: 30px;
+  font-size: 60px;
 }
-.projects{
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
-    gap:20px;
+
+/* grid of cards */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  padding-bottom: 20px;
 }
-.projects h1{
-    font-size: 24px;
-    margin: 10px;
+
+/* base card */
+.project,
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  gap: 10px;
+  width: 100%;
+  max-width: 350px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* entry state (offscreen top-left, smaller, transparent) */
+  transform: translate(-100%, -100%) scale(0.85);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(.22,.61,.36,1), opacity 0.4s;
 }
 .project{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow:0 0 5px var( --color-bg-primary);
-    gap:10px;
+    background:var(--color-bg-primary);
 }
-.project img{
-    width: 240px;
-    height: 240px;
+/* applied after mount to animate in */
+.project.enter,
+.project-card.enter {
+  transform: translate(0, 0) scale(1);
+  opacity: 1;
 }
-.project a{
-    background: var(--color-btn-bg);
-    padding:10px;
-    width: auto;
-    border-radius: 10px;
-    margin: 10px auto;
-    transition: all 0.5s ease-in-out;
+
+/* exit state: move to bottom-right and fade */
+.project.exit,
+.project-card.exit {
+  transform: translate(100%, 100%) scale(0.85);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.3s ease;
 }
-.project a:hover{
-    background: var( --color-bg-primary);
+
+/* alternating backgrounds if desired */
+.project:nth-child(odd),
+.project-card:nth-child(odd) {
+  background: #ffffff;
 }
+
+/* title inside card */
+.project h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* image styling */
+.project img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* link/button */
+.project a {
+  background: var(--color-btn-bg);
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 10px auto;
+  transition: background 0.25s ease-in-out, transform 0.2s;
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+}
+.project a:hover {
+  background: var(--color-bg-primary);
+  transform: translateY(-2px);
+}
+
+/* disabled link */
 .disabled-link {
-    pointer-events: none;
-    opacity: 0.5;
-    cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: line-through;
 }
+
+/* remove button (example) */
+.project button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+}
+
+/* responsive adjustments */
 @media (max-width: 768px) {
-    .projects-container{
-        width: 90%;
-    }
-    .projects h1{
-        font-size: 20px;
-    }
-    .project img{
-        width: 200px;
-        height: 200px;
-    }
-    .project a{
-        width: 70%;
-    }
-    .project h1{
-        font-size: 16px;
-    }
-    .projects{
-        grid-template-columns: repeat(auto-fit,minmax(200px, 1fr));
-    }
-    .projects-container h1{
-        font-size: 16px;
-    }
-    .project a{
-        padding: 8px;
-        font-size: 16px;
-        margin: 10px;
-        width: auto;
-    }
-    
+  .projects {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .project img {
+    width: 100%;
+    height: auto;
+  }
+  .projects-container h1 {
+    font-size: 32px;
+  }
+  .project h1 {
+    font-size: 1rem;
+  }
+  .project a {
+    padding: 8px 12px;
+    font-size: 14px;
+    margin: 8px auto;
+  }
 }
