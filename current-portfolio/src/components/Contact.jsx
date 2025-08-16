@@ -62,7 +62,7 @@ const Contact = () => {
 
     try {
 
-      const resp = await fetch(`${API_BASE}/contact.php`, {
+      const resp = await fetch(`${API_BASE}/index.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
