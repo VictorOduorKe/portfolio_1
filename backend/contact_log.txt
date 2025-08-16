@@ -1,0 +1,15 @@
+2025-08-10 09:47:13 - Name: Ben, Phone: 0759335491, Email: admin@juice-sh.op, Message: hello john
+2025-08-10 09:51:56 - Name: Bosco, Phone: 0759335491, Email: klin@gmail.com, Message: yes its me
+2025-08-10 10:01:47 - Name: Mercy, Phone: +254759335491, Email: d@gmail.com, Message: yes its me mercy
+2025-08-10 10:02:49 - Name: Dol, Phone: +254759335491, Email: hh@gmail.com, Message: yes its me dol
+2025-08-10 10:04:26 - Name: John, Phone: 0759335491, Email: hh@gmail.com, Message: yes its me kal johns
+2025-08-10 10:10:20 - Name: Kadois, Phone: 07456673233, Email: kadois@gmail.com, Message: yes its me kadois
+2025-08-10 10:40:30 - Name: Davison, Phone: 0759335491, Email: admin@juice-sh.op, Message: yes its me Davison
+2025-08-10 10:48:48 - Name: Kemu, Phone: 0756783323, Email: kemu@gmail.com, Message: Its me kemu
+2025-08-10 10:55:37 - Name: kelden, Phone: 0845873423, Email: kelden@gmail.com, Message: its me kelden
+2025-08-15 16:20:16 - Name: Bosco, Phone: 0759335491, Email: victoroduorxh2@gmail.com, Message: yes its me
+2025-08-15 16:28:39 - Name: Bosco, Phone: 0759335491, Email: admin@juice-sh.op, Message: yes i found you
+2025-08-15 16:29:59 - Name: Bosco, Phone: 0759335491, Email: bosco@gmail.com, Message: yes its me again
+2025-08-15 16:31:55 - Name: Bosco, Phone: 0759335491, Email: bosco@gmail.com, Message: yes its me again
+2025-08-15 16:33:11 - Name: Bosco, Phone: 0759335491, Email: victoroduorxh2@gmail.com, Message: test mail.com
+2025-08-15 16:37:36 - Name: Bosco, Phone: 0759335491, Email: hh@gmail.com, Message: yes its a test mail

@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../css/Contact.css';
 
-//const rawApiBase = process.env.VITE_API_BASE||"http://localhost:4000";
- const API_BASE = import.meta.env.VITE_API_BASE;
- const isBeta = import.meta.env.VITE_ENABLE_BETA === 'true';
-console.log("THIS IS API: ",API_BASE)
+// Import configuration
+import { config } from '../../env-config.js';
+
+// Use configuration or fallback to environment variables
+//const API_BASE = import.meta.env.VITE_API_BASE || config.API_BASE;
+const isBeta = import.meta.env.VITE_ENABLE_BETA === 'true' || config.ENABLE_BETA;
+// If beta is enabled, use the beta API base
+const API_BASE = isBeta ? import.meta.env.VITE_API_BASE_BETA || config.API_BASE_BETA : import.meta.env.VITE_API_BASE || config.API_BASE;
+
 const Contact = () => {
   const timeout = 6000;
   const [errors, setErrors] = useState('');
@@ -56,9 +61,8 @@ const Contact = () => {
     }
 
     try {
-      console.log('API_BASE:', API_BASE);
 
-      const resp = await fetch(`${API_BASE}/api/contact`, {
+      const resp = await fetch(`${API_BASE}/contact.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -74,14 +78,14 @@ const Contact = () => {
       }
 
       if (resp.ok) {
-        setSuccess('Thank you for contacting us! Contact sent via WhatsApp.');
+        setSuccess(result.message);
         formEl.reset();
       } else {
         setErrors(result.error || `Submission failed (${resp.status}).`);
       }
     } catch (err) {
       console.error('Network error:', err);
-      setErrors('Network error.');
+      setErrors(result.error ,'Network error.');
     } finally {
       clearMessages();
       setLoading(false);
